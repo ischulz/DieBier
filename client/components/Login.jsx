@@ -14,6 +14,10 @@ class Login extends React.Component {
 
   render() {
     return (
+      <div>
+        <span>What do you wanna Login with?</span>
+        <a href="/google/callback">Log In with Facebook</a>
+      </div>
     )
   }
 }
