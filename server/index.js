@@ -8,7 +8,8 @@ const db = require('../db/model.js');
 const app = express();
 const cors = require('cors')
 const BreweryDb = require('brewerydb-node');
-const brewdb = new BreweryDb('abeed219f6f7bee05b0e1e08d4f0d7ac');
+//const brewdb = new BreweryDb('abeed219f6f7bee05b0e1e08d4f0d7ac');
+const brewdb = new BreweryDb(process.ENV.BREWKEY);
 
 const passport = require('passport');
 const session = require('express-session');
@@ -50,7 +51,8 @@ app.use(webpackDevMiddleware(compiler, {
   publicPath: config.output.publicPath
 }));
 
-mongoose.connect('mongodb://localhost:27017/BeerApp');
+// mongoose.connect('mongodb://localhost:27017/BeerApp');
+mongoose.connect('mongodb://process.ENV.DBUSER:process.ENV.DBPASSWORD@ds125489.mlab.com:25489/beer-db')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
