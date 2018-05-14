@@ -8,7 +8,6 @@ const db = require('../db/model.js');
 const app = express();
 const cors = require('cors')
 const BreweryDb = require('brewerydb-node');
-//const brewdb = new BreweryDb('abeed219f6f7bee05b0e1e08d4f0d7ac');
 const brewdb = new BreweryDb(process.env.BREWKEY);
 
 const passport = require('passport');
