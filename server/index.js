@@ -52,7 +52,7 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 
 // mongoose.connect('mongodb://localhost:27017/BeerApp');
-mongoose.connect('mongodb://process.ENV.DBUSER:process.ENV.DBPASSWORD@ds125489.mlab.com:25489/beer-db')
+mongoose.connect(`mongodb://${process.ENV.DBUSER}:${process.ENV.DBPASSWORD}@ds125489.mlab.com:25489/beer-db`)
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
