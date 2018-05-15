@@ -34,7 +34,7 @@ class SearchBar extends React.Component {
               onChange={this.handleChange}
               />
           </FormGroup>{' '}
-          <Button className="searchButton" type="submit">Save</Button>
+          <Button className="searchButton" type="submit">Search</Button>
         </Form>
       </div>
     );
