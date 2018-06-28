@@ -1,4 +1,5 @@
 const express = require('express');
+const keys = require('../config/keys');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -8,37 +9,74 @@ const db = require('../db/model.js');
 const app = express();
 const cors = require('cors')
 const BreweryDb = require('brewerydb-node');
-const brewdb = new BreweryDb(process.env.BREWKEY);
+const brewdb = new BreweryDb(keys.BREWKEY);
 
+const cookieSession = require ('cookie-session');
 const passport = require('passport');
 const session = require('express-session');
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-// passport.use(new GoogleStrategy({
-//     clientID: '192916737810-eigcmnb4vgf7m8s5vd4t5q76i8q9k3fc.apps.googleusercontent.com',
-//     clientSecret: 'dbpFYdxgX2XG9XLGOoLjBMeU',
-//     callbackURL: "http://localhost:3001/auth/google/callback"
-//   },
-//   function(accessToken, refreshToken, profile, cb) {
-//     User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//       return cb(err, user);
-//     });
-//   }
-// ));
+// mongoose.connect('mongodb://localhost:27017/BeerApp');
+mongoose.connect(`mongodb://${keys.DBUSER}:${keys.DBPASSWORD}@ds125489.mlab.com:25489/beer-db`, {useMongoClient: true});
 
-// app.get('/auth/google',
-//   passport.authenticate('google', { scope: ['profile'] }));
+app.use(
+  cookieSession({
+    //1month
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [keys.COOKIEKEY],
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-// app.get('/auth/google/callback', 
-//   passport.authenticate('google', { failureRedirect: '/auth' }),
-//   function(req, res) {
-//     // Successful authentication, redirect home.
-//     res.redirect('/');
-//   });
+passport.serializeUser((user, done) => {
+    done(null, user[0]._id)
+});
+
+passport.deserializeUser((id, done) => {
+  db.findUserById(id, done);
+});
+
+passport.use(new GoogleStrategy({
+    clientID: keys.CLIENTID,
+    clientSecret: keys.CLIENTSECRET,
+    callbackURL: "http://localhost:3001/auth/google/callback"
+  },
+  (accessToken, refreshToken, profile, done) => {
+    let currentUser = {
+      user_id: profile.id,
+      user_name: profile.displayName,
+    };
+    db.findOrCreate(currentUser, done);
+  }
+));
+
+app.get('/auth/google',
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+  })
+);
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/'
+  })
+);
+
+app.get('/test/getuser', (req, res) => {
+  res.send(req.user);
+});
+
+app.get('/api/logout', (req ,res) => {
+  req.logout();
+  res.redirect('/');
+})
 
 app.use(cors())
 
 app.use(morgan('dev'));
+
 // setting up webpack dev
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -50,20 +88,15 @@ app.use(webpackDevMiddleware(compiler, {
   publicPath: config.output.publicPath
 }));
 
-// mongoose.connect('mongodb://localhost:27017/BeerApp');
-mongoose.connect(`mongodb://${process.env.DBUSER}:${process.env.DBPASSWORD}@ds125489.mlab.com:25489/beer-db`, {useMongoClient: true});
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
-
-// client ID 192916737810-eigcmnb4vgf7m8s5vd4t5q76i8q9k3fc.apps.googleusercontent.com
-// client secret dbpFYdxgX2XG9XLGOoLjBMeU
 
 // app.get('/:id', (req, res) => res.sendFile(path.join(__dirname + '/../public/index.html')));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/../public/index.html')));
 app.use('/content', express.static(path.join(__dirname + '/../public')));
 app.use('/MyList', express.static(path.join(__dirname + '/../public')));
+app.use('/Login', express.static(path.join(__dirname + '/../public')));
 
 app.use('/api/name/:name', (req, res) => {
   const name = req.params.name;

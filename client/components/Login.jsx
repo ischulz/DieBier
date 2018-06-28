@@ -1,5 +1,5 @@
 import React from 'react';
-import Header form './Header.jsx';
+import Header from './Header.jsx';
 import { Button, Form, FormGroup, FormControl, Grid, Col, Row, Glyphicon, Popover, OverlayTrigger } from 'react-bootstrap'; 
 
 class Login extends React.Component {
@@ -16,7 +16,7 @@ class Login extends React.Component {
     return (
       <div>
         <span>What do you wanna Login with?</span>
-        <a href="/google/callback">Log In with Facebook</a>
+        <a href="/auth/google">Log In with Google</a>
       </div>
     )
   }

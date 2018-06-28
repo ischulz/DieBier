@@ -12,7 +12,13 @@ var myBeers = mongoose.Schema({
   beer_personalDescription: String,
 });
 
+var userSchema = mongoose.Schema({
+  user_id: {type: String, unique: true},
+  user_name: String,
+});
+
 var beers = mongoose.model('beers', myBeers);
+var users = mongoose.model('users', userSchema);
 
 function findAll(callback) {
   beers.find().then((result) => callback(result));
@@ -34,11 +40,32 @@ function updateBeer(id, objToUpdate, callback) {
   beers.update({beer_id: id}, {$set: objToUpdate}, callback);
 }
 
+function findOrCreate(user, callback) {
+  let id = user.user_id;
+  users.find({user_id: id}).then((result) => {
+    if(result.length !== 0) {
+      callback(null, result);
+    }else {
+      users.create(user,callback).then((result) => {
+        callback(null, result);
+      });
+    }
+  });
+}
+
+function findUserById(id, callback) {
+  users.find({_id: id}).then((result) => {
+    callback(null, result);
+  });
+}
+
 exports.findAll = findAll;
 exports.insert = insert;
 exports.beers = beers;
 exports.removeOne = removeOne;
 exports.updateBeer = updateBeer;
+exports.findOrCreate = findOrCreate;
+exports.findUserById = findUserById;
 
 // id: response.data[0].id,
 // name: response.data[0].name,

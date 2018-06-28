@@ -30,7 +30,12 @@ class Header extends React.Component {
             </NavItem>
           </Nav>
           <Nav pullRight>
-            <NavItem eventKey={1} href="#">
+            <NavItem eventKey={3} href="/auth/google">
+              Log In
+            </NavItem>
+          </Nav>
+          <Nav pullRight>
+            <NavItem eventKey={4} href="/api/logout">
               Log Out
             </NavItem>
           </Nav>
