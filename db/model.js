@@ -10,6 +10,7 @@ var myBeers = mongoose.Schema({
   beer_drankIt: Boolean,
   beer_rating: Number,
   beer_personalDescription: String,
+  beer_user_id: String,
 });
 
 var userSchema = mongoose.Schema({
@@ -59,6 +60,12 @@ function findUserById(id, callback) {
   });
 }
 
+function findUserByUserId(user_id, callback) {
+  users.find({user_id: user_id}).then((result) => {
+    callback(result);
+  })
+}
+
 exports.findAll = findAll;
 exports.insert = insert;
 exports.beers = beers;
@@ -66,6 +73,7 @@ exports.removeOne = removeOne;
 exports.updateBeer = updateBeer;
 exports.findOrCreate = findOrCreate;
 exports.findUserById = findUserById;
+exports.findUserByUserId = findUserByUserId;
 
 // id: response.data[0].id,
 // name: response.data[0].name,

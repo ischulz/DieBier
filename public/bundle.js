@@ -5822,7 +5822,7 @@ var Header = function (_React$Component) {
           null,
           _react2.default.createElement(
             _reactRouterBootstrap.LinkContainer,
-            { to: '/' },
+            { to: '/Home' },
             _react2.default.createElement(
               _reactBootstrap.Navbar.Brand,
               null,
@@ -15684,7 +15684,8 @@ _reactDom2.default.render(_react2.default.createElement(
   _react2.default.createElement(
     'div',
     null,
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _App2.default }),
+    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Login2.default }),
+    _react2.default.createElement(_reactRouterDom.Route, { path: '/Home', component: _App2.default }),
     _react2.default.createElement(_reactRouterDom.Route, { path: '/MyList', component: _MyList2.default }),
     _react2.default.createElement(_reactRouterDom.Route, { path: '/Login', component: _Login2.default })
   )

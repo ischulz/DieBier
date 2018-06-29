@@ -30,7 +30,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser((user, done) => {
-    done(null, user[0]._id)
+  console.log('USER:', user);
+  done(null, user[0]._id)
 });
 
 passport.deserializeUser((id, done) => {
@@ -59,8 +60,8 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback', 
   passport.authenticate('google', {
-    successRedirect: '/',
-    failureRedirect: '/'
+    successRedirect: '/Home',
+    failureRedirect: '/Login'
   })
 );
 
@@ -70,7 +71,7 @@ app.get('/test/getuser', (req, res) => {
 
 app.get('/api/logout', (req ,res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect('/Login');
 })
 
 app.use(cors())
@@ -93,11 +94,55 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 
 // app.get('/:id', (req, res) => res.sendFile(path.join(__dirname + '/../public/index.html')));
-app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/../public/index.html')));
-app.use('/content', express.static(path.join(__dirname + '/../public')));
-app.use('/MyList', express.static(path.join(__dirname + '/../public')));
+
+//app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/../public/index.html')));
+// app.use('/content', express.static(path.join(__dirname + '/../public')));
+// app.use('/Home', express.static(path.join(__dirname + '/../public')));
+// app.use('/MyList', express.static(path.join(__dirname + '/../public')));
 app.use('/Login', express.static(path.join(__dirname + '/../public')));
 
+//starting new stuff
+app.use('/Home', (req, res, next) => {
+  console.log('HOME', req.user);
+  if(req.user) {
+    res.sendFile(path.join(__dirname + '/../public/index.html'));
+  }else {
+    res.redirect('/Login');
+  }
+});
+
+app.get('/MyList', (req, res) => {
+  if(req.user) {
+    console.log('IN MYLIST HANDLER');
+    res.sendFile(path.join(__dirname + '/../public/index.html'));
+  }else {
+    res.redirect('/Login');
+    res.send();
+  }
+});
+
+app.get('/', (req, res) => {
+  let idToSearch;
+  if(req.user){
+    idToSearch = req.user[0].user_id;
+    console.log('ID', idToSearch);
+  }else {
+    console.log('no ID redirection to Login');
+    res.redirect('/Login');
+  }
+  console.log('TESTUSER', typeof(idToSearch));
+  db.findUserByUserId(idToSearch, (result) => {
+    console.log('DB RETURN', result, result.length);
+    if(result.length !== 0) {
+      res.redirect('/Home')
+    }else {
+      console.log('redirection to login');
+      res.redirect('/Login');
+    }
+  });
+});
+
+////old stuff
 app.use('/api/name/:name', (req, res) => {
   const name = req.params.name;
   brewdb.search.all({ q: `${name}*` }, (err, data) => {
@@ -145,6 +190,8 @@ app.put('/api/beerUpdate/:id', (req,res) => {
 
 app.use('/api/addBeer/:beerToStore', (req, res) => {
   let id = req.params.beerToStore;
+  let user_id = req.user[0].user_id;
+  console.log(req.user);
   brewdb.beer.getById(id, {}, (err, data) => { 
     var newBeer = {
       beer_id: data.id,
@@ -156,6 +203,7 @@ app.use('/api/addBeer/:beerToStore', (req, res) => {
       beer_drankIt: false,
       beer_rating: 0,
       beer_personalDescription: '',
+      beer_user_id: user_id,
     };
     db.insert(newBeer, (err) => {
       if(err) throw err;

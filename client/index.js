@@ -12,7 +12,8 @@ import './beerBackground.jpg';
 ReactDOM.render((
 <Router>
   <div>
-    <Route exact path='/' component={App} />
+    <Route exact path='/' component={Login} />
+    <Route path='/Home' component={App} />
     <Route path='/MyList' component={MyList} />
     <Route path='/Login' component={Login} />
   </div>

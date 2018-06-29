@@ -15,7 +15,7 @@ class Header extends React.Component {
     return (
       <Navbar inverse collapseOnSelect>
         <Navbar.Header>
-          <LinkContainer to="/">
+          <LinkContainer to="/Home">
             <Navbar.Brand>DieBier</Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle />

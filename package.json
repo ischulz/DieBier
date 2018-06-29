@@ -1,7 +1,7 @@
 {
   "name": "DieBier",
   "version": "1.0.0",
-  "description": "MVP",
+  "description": "Application that allows you to search for Beers and store them in a list for rating etc",
   "author": "Ilias Schulz",
   "license": "",
   "engines": {
@@ -18,6 +18,7 @@
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "brewerydb-node": "0.0.1",
+    "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.4",
     "enzyme-adapter-react-16": "^1.1.1",
     "enzyme-react-16-adapter-setup": "^0.1.0",
