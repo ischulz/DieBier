@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var myBeers = mongoose.Schema({
-  beer_id: {type: String, unique: true},
+  beer_id: String,
   beer_name: String,
   beer_abv: String,
   beer_description: String,
@@ -11,6 +11,7 @@ var myBeers = mongoose.Schema({
   beer_rating: Number,
   beer_personalDescription: String,
   beer_user_id: String,
+  beer_uniqueId: {type: String, unique: true},
 });
 
 var userSchema = mongoose.Schema({
@@ -21,24 +22,24 @@ var userSchema = mongoose.Schema({
 var beers = mongoose.model('beers', myBeers);
 var users = mongoose.model('users', userSchema);
 
-function findAll(callback) {
-  beers.find().then((result) => callback(result));
-}
-
 function findOne(id, callback) {
   beers.find({beer_id: id}).then((result) => callback(result));
 }
-
-function removeOne(id, callback) {
-  beers.remove({beer_id: id}).then((result) => callback(result));
+//needsUserID
+function findAll(userId, callback) {
+  beers.find({beer_user_id: userId}).then((result) => callback(result));
+}
+//needs userID
+function removeOne(id, userId, callback) {
+  beers.remove({beer_id: id, beer_user_id: userId}).then((result) => callback(result));
 }
 
 function insert(id, callback) {
   beers.create(id, callback);
 }
-
-function updateBeer(id, objToUpdate, callback) {
-  beers.update({beer_id: id}, {$set: objToUpdate}, callback);
+//needs userID
+function updateBeer(id, objToUpdate, userId, callback) {
+  beers.update({beer_id: id, beer_user_id: userId}, {$set: objToUpdate}, callback);
 }
 
 function findOrCreate(user, callback) {

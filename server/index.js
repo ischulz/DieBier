@@ -103,7 +103,7 @@ app.use('/Login', express.static(path.join(__dirname + '/../public')));
 
 //starting new stuff
 app.use('/Home', (req, res, next) => {
-  console.log('HOME', req.user);
+  //console.log('HOME', req.user);
   if(req.user) {
     res.sendFile(path.join(__dirname + '/../public/index.html'));
   }else {
@@ -113,7 +113,7 @@ app.use('/Home', (req, res, next) => {
 
 app.get('/MyList', (req, res) => {
   if(req.user) {
-    console.log('IN MYLIST HANDLER');
+    //console.log('IN MYLIST HANDLER');
     res.sendFile(path.join(__dirname + '/../public/index.html'));
   }else {
     res.redirect('/Login');
@@ -125,18 +125,18 @@ app.get('/', (req, res) => {
   let idToSearch;
   if(req.user){
     idToSearch = req.user[0].user_id;
-    console.log('ID', idToSearch);
+    //console.log('ID', idToSearch);
   }else {
-    console.log('no ID redirection to Login');
+    //console.log('no ID redirection to Login');
     res.redirect('/Login');
   }
-  console.log('TESTUSER', typeof(idToSearch));
+  //console.log('TESTUSER', typeof(idToSearch));
   db.findUserByUserId(idToSearch, (result) => {
-    console.log('DB RETURN', result, result.length);
+    //console.log('DB RETURN', result, result.length);
     if(result.length !== 0) {
       res.redirect('/Home')
     }else {
-      console.log('redirection to login');
+      //console.log('redirection to login');
       res.redirect('/Login');
     }
   });
@@ -164,14 +164,14 @@ app.use('/api/picture/:id', (req, res) => {
 });
 
 app.use('/api/allBeers', (req, res) => {
-  db.findAll((result) => {
+  db.findAll(req.user[0].user_id, (result) => {
     res.send(result);
   });
 });
 
 app.use('/api/removeBeer/:id', (req, res) => {
   let id = req.params.id;
-  db.removeOne(id, (result) => {
+  db.removeOne(id, req.user[0].user_id, (result) => {
     res.send(result);
   });
 });
@@ -183,7 +183,7 @@ app.put('/api/beerUpdate/:id', (req,res) => {
   let what = req.body.what;
   let how = req.body.how;
   obj[what] = how;
-  db.updateBeer(id, obj, (result) => {
+  db.updateBeer(id, obj, req.user[0].user_id, (result) => {
     res.send(result);
   })
 })
@@ -204,6 +204,7 @@ app.use('/api/addBeer/:beerToStore', (req, res) => {
       beer_rating: 0,
       beer_personalDescription: '',
       beer_user_id: user_id,
+      beer_uniqueId: user_id + data.id,
     };
     db.insert(newBeer, (err) => {
       if(err) throw err;
